@@ -1,0 +1,31 @@
+﻿services:
+  mysql:
+    image: mysql:8.4
+    container_name: devaiagent-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: devaiagent
+      MYSQL_USER: devaiagent
+      MYSQL_PASSWORD: devaiagent
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  app:
+    build: .
+    container_name: devaiagent-app
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/devaiagent?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: devaiagent
+      SPRING_DATASOURCE_PASSWORD: devaiagent
+      JWT_SECRET: change-me-change-me-change-me-change-me
+      AI_PROVIDER: gemini
+      GEMINI_API_KEY: ""
+    ports:
+      - "8080:8080"
+volumes:
+  mysql_data:
